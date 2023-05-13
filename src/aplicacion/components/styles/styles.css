@@ -1,0 +1,10 @@
+.ReactModal__Close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+  }
+  
