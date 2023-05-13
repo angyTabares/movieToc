@@ -21,6 +21,7 @@ export const ModalPelicula = () => {
     const {isDateModalOpen,closeDateModal} = useUiStore();
     const {peliculaActiva, startSavingPelicula} = usePeliculasStore();
     const [genero, setGenero] = useState(peliculaActiva?.genero);
+    const [favorita, setFavorita] = useState((peliculaActiva?.favorita=== true ? true : false));
     const [formSubmitted, setFormSubmmited] = useState(false);
 
     const [formValues, setFormValues] = useState({
@@ -42,6 +43,7 @@ export const ModalPelicula = () => {
     useEffect(() => {
         if(peliculaActiva!==null){
           setGenero(peliculaActiva.genero);
+          setFavorita(peliculaActiva.favorita);
           setFormValues({...peliculaActiva});
         }
     }, [peliculaActiva])
@@ -61,7 +63,7 @@ export const ModalPelicula = () => {
         event.preventDefault();  
         setFormSubmmited(true);
 
-        await startSavingPelicula({...formValues,genero});
+        await startSavingPelicula({...formValues,genero,favorita});
         closeDateModal();
         setFormSubmmited(false);
         console.log(formValues,genero) 
@@ -142,16 +144,26 @@ export const ModalPelicula = () => {
                     type="text" 
                     className={`form-control ${titleClass}`}
                     placeholder="Descripción"
-                    rows="5"
+                    rows="3"
                     name="descripcion"
                     value={ formValues.descripcion}
                     onChange={onInputChanged}
                 ></textarea>
             </div>
 
+            <div className="form-group mb-2">
+                <div className="form-check">
+                    <input className="form-check-input" type="checkbox" id="gridCheck3" checked={favorita} onChange= {()=>setFavorita(!favorita)} />
+                    <label className="form-check-label" >
+                        {
+                            (favorita ? "Favorita ": "Marcar como favorita")
+                        }
+                    </label>
+                </div>
+            </div>
             <button
                 type="submit"
-                className="btn btn-outline-primary btn-block"
+                className="btn btn-outline-primary btn-block "
             >
                 <i className="far fa-save"></i>
                 <span> Guardar</span>
