@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { usePeliculasStore, useUiStore } from "../../hooks"
 import { BsTrashFill,BsFillEyeFill} from "react-icons/bs"
 
 export const Tabla = () => {
-  const {peliculas, setPeliculaActiva, startdeletingPelicula} = usePeliculasStore();
+  const {peliculas, setPeliculaActiva, startdeletingPelicula, startLoadingPeliculas} = usePeliculasStore();
   const { openDateModal } = useUiStore();
 
   const verPelicula=(pelicula)=>{
@@ -16,6 +17,10 @@ export const Tabla = () => {
     startdeletingPelicula();
   }
 
+  useEffect(() => {
+    startLoadingPeliculas();
+  }, [])
+  
   return (
     <div className="table-responsive">
         <table className="table table-bordered border-dark">

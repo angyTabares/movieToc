@@ -1,20 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const pelitemp = {
-  id: "1",
-  titulo: "El señor de los anillos",
-  director: "Peter Jackson",
-  anio: "2001",
-  descripcion:
-    "En la Tierra Media, el Señor Oscuro Sauron forjó los Grandes Anillos del Poder y creó uno con el poder de esclavizar a toda la Tierra Media. ",
-  favorita: true,
-  genero: "Novela",
-};
-
 export const peliculasSlice = createSlice({
   name: "peliculas",
   initialState: {
-    peliculas: [pelitemp],
+    isLoadingPeliculas: true,
+    peliculas: [],
     peliculaActiva: null,
   },
   reducers: {
@@ -42,6 +32,18 @@ export const peliculasSlice = createSlice({
         state.peliculaActiva = null;
       }
     },
+    onLoadPeliculas: (state, { payload = [] }) => {
+      state.isLoadingPeliculas = false;
+
+      payload.forEach((pelicula) => {
+        const exists = state.peliculas.some(
+          (dbPelicula) => dbPelicula.id === pelicula.id
+        );
+        if (!exists) {
+          state.peliculas.push(pelicula);
+        }
+      });
+    },
   },
 });
 
@@ -50,4 +52,5 @@ export const {
   onAddNuevaPelicula,
   onUpdatePelicula,
   onDeletePelicula,
+  onLoadPeliculas,
 } = peliculasSlice.actions;

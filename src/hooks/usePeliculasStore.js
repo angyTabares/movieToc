@@ -2,10 +2,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   onAddNuevaPelicula,
   onDeletePelicula,
+  onLoadPeliculas,
   onSetPeliculaActiva,
   onUpdatePelicula,
 } from "../store";
 import Swal from "sweetalert2";
+import peliculasApi from "../api/peliculasApi";
 
 export const usePeliculasStore = () => {
   const dispatch = useDispatch();
@@ -19,31 +21,43 @@ export const usePeliculasStore = () => {
     try {
       if (pelicula.id) {
         //actualizando
-        //await calendarApi.put(`/events/${calendarEvent.id}`, calendarEvent);
+        await peliculasApi.put(`/peliculas/${pelicula.id}`, pelicula);
         dispatch(onUpdatePelicula({ ...pelicula }));
         dispatch(onSetPeliculaActiva(pelicula));
         return;
       }
       //creando
-      //const { data } = await calendarApi.post("/events", calendarEvent);
-      dispatch(onAddNuevaPelicula({ ...pelicula, id: "123" }));
+      const { data } = await peliculasApi.post("/peliculas", pelicula);
+      dispatch(onAddNuevaPelicula({ ...pelicula, id: data.id }));
     } catch (error) {
       console.log(error);
-      Swal.fire("Error al guardar", error, "error");
+      Swal.fire("Error al guardar", error.response.data.msg, "error");
     }
   };
 
   const startdeletingPelicula = async () => {
     try {
       if (peliculaActiva.id) {
-        //await calendarApi.delete(`/events/${activeEvent.id}`);
+        await peliculasApi.delete(`/peliculas/${peliculaActiva.id}`);
         dispatch(onDeletePelicula());
         return;
       }
     } catch (error) {
-      Swal.fire("Error al eliminar", error, "error");
+      Swal.fire("Error al eliminar", "error");
     }
   };
+
+  const startLoadingPeliculas = async () => {
+    try {
+      const { data } = await peliculasApi.get("/peliculas");
+      dispatch(onLoadPeliculas(data));
+      console.log({ data });
+    } catch (error) {
+      console.log("Error cargando eventos");
+      console.log(error);
+    }
+  };
+
   return {
     //*propiedades
     peliculas,
@@ -53,5 +67,6 @@ export const usePeliculasStore = () => {
     setPeliculaActiva,
     startSavingPelicula,
     startdeletingPelicula,
+    startLoadingPeliculas,
   };
 };
