@@ -50,12 +50,13 @@ export const usePeliculasStore = () => {
   };
 
   const startLoadingPeliculas = async () => {
-    dispatch(onChangeLoading());
     try {
+      dispatch(onChangeLoading());
       const { data } = await peliculasApi.get("/peliculas");
       dispatch(onLoadPeliculas(data));
     } catch (error) {
       Swal.fire("Error al cargar películas", error.msg, "error");
+      dispatch(onChangeLoading());
     }
   };
 

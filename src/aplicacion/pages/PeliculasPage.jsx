@@ -1,4 +1,4 @@
-import { ModalPelicula, Navbar, Tabla,Loading, Footer } from "../"
+import { ModalPelicula, Navbar, Tabla,Loading, Footer, Buscador } from "../"
 import { usePeliculasStore } from "../../hooks";
 import { generos } from "../../data/generos"
 import {  useEffect, useState } from "react";
@@ -7,6 +7,7 @@ import { filtrarDirectores } from "../../helpers/filtrarDirectores";
 export const PeliculasPage = () => {
   const {peliculas,isLoadingPeliculas, peliculasDirectores,startLoadingPeliculas } = usePeliculasStore();
   const [peliculasFiltradas, setPeliculasFiltradas] = useState(peliculas);
+  const [peliculaBuscador, setpeliculaBuscador] = useState(peliculas);
   const directores = filtrarDirectores(peliculasDirectores); 
   const [anio, setAnio] = useState(0);
   const [generoRadioStates, setgeneroRadioStates] = useState(Array(generos.length).fill(false));
@@ -21,6 +22,7 @@ export const PeliculasPage = () => {
       return filterGenero && filterAnio && filterDirector;
     });
     setPeliculasFiltradas(filteredMovies);
+    setpeliculaBuscador(peliculas);
   };
 
   const onFavoritos = () => {
@@ -47,14 +49,19 @@ export const PeliculasPage = () => {
     localStorage.clear();
     setAnio(0);
     setPeliculasFiltradas(peliculas);
-    setdirectorRadioStates(directorRadioStates.fill(false));
+    setdirectorRadioStates(Array(directores.length).fill(false));
     setgeneroRadioStates(generoRadioStates.fill(false));
   }
-
   
   useEffect(() => {
+    localStorage.clear();
     startLoadingPeliculas();
   }, [])
+
+  /*
+  useEffect(() => {
+    startLoadingPeliculas();
+  }, [peliculas])*/
 
   return (
     <>
@@ -142,10 +149,11 @@ export const PeliculasPage = () => {
               </div>
             </div>
           </div>
- 
+          
           <div className="col-md-9">
+          <Buscador/>
            {
-             (peliculasFiltradas.length===0?<Tabla peliculas={peliculas}/>:<Tabla peliculas={peliculasFiltradas}/>)
+             (peliculasFiltradas.length===0 || peliculaBuscador.length===1?<Tabla peliculas={peliculas}/>:<Tabla peliculas={peliculasFiltradas}/>)
            } 
           </div> 
         </div>

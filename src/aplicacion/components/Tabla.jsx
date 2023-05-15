@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { usePeliculasStore} from "../../hooks"
 import PropTypes from 'prop-types';
-import { Buscador } from "./Buscador";
 import { BodyTable } from "./BodyTable";
 
 export const Tabla = ({peliculas}) => {
   const { peliculas:pelis} = usePeliculasStore();
-
+  
   const [paginaActual, setpaginaActual] = useState(1);
   const peliculasXPagina = 10;
   const totalPages = Math.ceil(peliculas.length / peliculasXPagina);
@@ -38,10 +37,8 @@ export const Tabla = ({peliculas}) => {
     }
   }
 
-  
   return (
     <>
-    <Buscador/>
       <div className="table-responsive mt-3" style={{backgroundColor:"white"}}>
           <table className="table table-bordered">
               <thead>

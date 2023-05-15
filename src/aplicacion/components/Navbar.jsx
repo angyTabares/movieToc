@@ -28,7 +28,7 @@ export const Navbar = () => {
               <i className="fa fa-film" aria-hidden="true"></i>
               <Link
                 className="navbar-brand" 
-                to="/"
+                to="/*"
                 >
                 &nbsp;
                 MovieToc
