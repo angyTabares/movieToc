@@ -6,6 +6,7 @@ export const peliculasSlice = createSlice({
     isLoadingPeliculas: true,
     peliculas: [],
     peliculaActiva: null,
+    peliculasDirectores: [],
   },
   reducers: {
     onSetPeliculaActiva: (state, { payload }) => {
@@ -14,6 +15,7 @@ export const peliculasSlice = createSlice({
     onAddNuevaPelicula: (state, { payload }) => {
       state.peliculas.push(payload);
       state.peliculaActiva = null;
+      state.peliculasDirectores.push(payload);
     },
     onUpdatePelicula: (state, { payload }) => {
       state.peliculas = state.peliculas.map((pelicula) => {
@@ -29,8 +31,15 @@ export const peliculasSlice = createSlice({
         state.peliculas = state.peliculas.filter(
           (pelicula) => pelicula.id !== state.peliculaActiva.id
         );
+
+        state.peliculasDirectores = state.peliculasDirectores.filter(
+          (pelicula) => pelicula.id !== state.peliculaActiva.id
+        );
         state.peliculaActiva = null;
       }
+    },
+    onChangeLoading: (state) => {
+      state.isLoadingPeliculas = !state.isLoadingPeliculas;
     },
     onLoadPeliculas: (state, { payload = [] }) => {
       state.isLoadingPeliculas = false;
@@ -43,6 +52,32 @@ export const peliculasSlice = createSlice({
           state.peliculas.push(pelicula);
         }
       });
+
+      payload.forEach((pelicula) => {
+        const exists = state.peliculasDirectores.some(
+          (dbPelicula) => dbPelicula.id === pelicula.id
+        );
+        if (!exists) {
+          state.peliculasDirectores.push(pelicula);
+        }
+      });
+    },
+    onLoadPeliculaById: (state, { payload = [] }) => {
+      state.isLoadingPeliculas = false;
+
+      payload.forEach((pelicula) => {
+        const exists = state.peliculas.some(
+          (dbPelicula) => dbPelicula.id === pelicula.id
+        );
+        if (!exists) {
+          state.peliculas.push(pelicula);
+        }
+      });
+    },
+    searchPeliculaById: (state, action) => {
+      state.peliculas = state.peliculas.filter(
+        (pelicula) => pelicula.id == action.payload
+      );
     },
   },
 });
@@ -53,4 +88,6 @@ export const {
   onUpdatePelicula,
   onDeletePelicula,
   onLoadPeliculas,
+  onChangeLoading,
+  searchPeliculaById,
 } = peliculasSlice.actions;

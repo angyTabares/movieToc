@@ -8,3 +8,6 @@
     font-size: 1.5rem;
   }
   
+.input-group input {
+    width: 50%;
+}

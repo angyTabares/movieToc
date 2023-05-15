@@ -40,5 +40,16 @@
 }
 
 body {
-    background-color: #f7f7f7;
+    background-color: white;
 }
+
+.card {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.table {
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+
+  

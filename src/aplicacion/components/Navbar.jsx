@@ -1,3 +1,4 @@
+import { Link} from "react-router-dom";
 import { usePeliculasStore, useUiStore } from "../../hooks";
 
 export const Navbar = () => {
@@ -25,8 +26,14 @@ export const Navbar = () => {
         <div className="container">
           <span className="navbar-brand">
               <i className="fa fa-film" aria-hidden="true"></i>
-              &nbsp;
-              MovieToc
+              <Link
+                className="navbar-brand" 
+                to="/"
+                >
+                &nbsp;
+                MovieToc
+              </Link>
+
           </span>
 
           <button className="btn btn-outline-light" onClick={onAddMovie}>

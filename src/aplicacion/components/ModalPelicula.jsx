@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePeliculasStore, useUiStore } from "../../hooks";
 import Modal from "react-modal";
 import {generos } from "../../data/generos.js";
 import "./styles/styles.css"
+
 const customStyles = {
     content: {
       top: '50%',
@@ -22,7 +23,7 @@ export const ModalPelicula = () => {
     const {peliculaActiva, startSavingPelicula} = usePeliculasStore();
     const [genero, setGenero] = useState(peliculaActiva?.genero);
     const [favorita, setFavorita] = useState((peliculaActiva?.favorita=== true ? true : false));
-    const [formSubmitted, setFormSubmmited] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const [formValues, setFormValues] = useState({
         titulo: '',
@@ -32,14 +33,34 @@ export const ModalPelicula = () => {
         favorita:false,
     })
     
-    const titleClass= useMemo(()=>{
-        if(!formSubmitted) return '';
-    
-        return (formValues.titulo.length > 0 || formValues.director.length > 0 || formValues.descripcion.length > 0 )
-          ? ''
-          : 'is-invalid';
-      })
-    
+    const validate=async()=>{
+        const newErrors = {};
+
+        if (formValues.titulo.length<=0) {
+          newErrors.titulo = "El campo titulo es obligatorio";
+        }
+        if (formValues.director.length<=0) {
+            newErrors.director = "El campo director es obligatorio";
+        }
+        if (formValues.anio==0) {
+            newErrors.anio = "El campo año es obligatorio";
+        }
+        if (formValues.descripcion.length<=0) {
+            newErrors.descripcion = "El campo descripcion es obligatorio";
+        }
+        if (genero.length<=0) {
+            newErrors.genero = "El campo genero es obligatorio";
+        }
+      
+        setErrors(newErrors);
+
+        if(!newErrors.titulo && !newErrors.director && !newErrors.anio && !newErrors.descripcion && !newErrors.genero){
+            await startSavingPelicula({...formValues,genero,favorita});
+            closeDateModal();
+        }
+        return Object.keys(newErrors).length === 0;
+    }
+
     useEffect(() => {
         if(peliculaActiva!==null){
           setGenero(peliculaActiva.genero);
@@ -56,17 +77,13 @@ export const ModalPelicula = () => {
     }
 
     const onCloseModal=()=>{
+        setErrors({});
         closeDateModal();
     }
 
     const onSubmit=async(event)=>{
         event.preventDefault();  
-        setFormSubmmited(true);
-
-        await startSavingPelicula({...formValues,genero,favorita});
-        closeDateModal();
-        setFormSubmmited(false);
-        console.log(formValues,genero) 
+        validate();
     }
 
     return (
@@ -89,42 +106,47 @@ export const ModalPelicula = () => {
         <hr />
         <form className="container" onSubmit={onSubmit}>
             <div className="form-group mb-2">
-                <label>Titulo</label>
+                <label>Titulo </label>
                 <input 
                     type="text" 
-                    className={`form-control ${titleClass}`}
+                    className={`form-control`}
                     placeholder="Título de la película"
                     name="titulo"
                     autoComplete="off"
                     value={ formValues.titulo}
                     onChange={onInputChanged}
                 />
+                {errors.titulo && <span className="text-danger">{errors.titulo}</span>}
             </div>
 
             <div className="form-group mb-2">
                 <label>Director </label>
                 <input
                     type="text" 
-                    className={`form-control ${titleClass}`}
+                    className={`form-control`}
                     placeholder="Director"
                     name="director"
                     value={ formValues.director}
                     onChange={onInputChanged}    
                 ></input>
+                {errors.director && <span className="text-danger">{errors.director}</span>}
             </div>
 
             <div className="form-group mb-2">
                 <label>Año</label>
                 <input
                     type="number"
-                    className={`form-control ${titleClass}`}
+                    className={`form-control`}
                     placeholder="Año"
                     name="anio"
                     value={ formValues.anio}
-                    onChange={onInputChanged}    
+                    onChange={onInputChanged}
+                    min="1800" 
+                    max="2023" 
+                    step="1"    
                 ></input>
+                {errors.anio && <span className="text-danger">{errors.anio}</span>}
             </div>
-
 
             <div className="form-group mb-2">
                 <label>Género</label>
@@ -136,19 +158,21 @@ export const ModalPelicula = () => {
                         ))
                     }
                 </select>
+                {errors.genero && <span className="text-danger">{errors.genero}</span>}
             </div>
 
             <div className="form-group mb-2">
                 <label>Descripción</label>
                 <textarea 
                     type="text" 
-                    className={`form-control ${titleClass}`}
+                    className={`form-control`}
                     placeholder="Descripción"
                     rows="3"
                     name="descripcion"
                     value={ formValues.descripcion}
                     onChange={onInputChanged}
                 ></textarea>
+                {errors.descripcion && <span className="text-danger">{errors.descripcion}</span>}
             </div>
 
             <div className="form-group mb-2">
@@ -161,9 +185,10 @@ export const ModalPelicula = () => {
                     </label>
                 </div>
             </div>
+            
             <button
                 type="submit"
-                className="btn btn-outline-primary btn-block "
+                className="btn btn-outline-primary btn-block mt-3"
             >
                 <i className="far fa-save"></i>
                 <span> Guardar</span>
